@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState, createContext } from 'react';
-const PostsContext = createContext();
+export const PostsContext = createContext();
 export const PostProvider = (props) => {
   const [data, setData] = useState('');
+  useEffect(() => {
+    fetch('http://localhost:5000/api/posts')
+      .then((response) => response.json())
+      .then((data) => setData(data));
+  }, []);
+
   return (
-    <PostsContext.Provider value="">{props.children}</PostsContext.Provider>
+    <PostsContext.Provider value={data}>{props.children}</PostsContext.Provider>
   );
 };

@@ -3,17 +3,21 @@ import useStyles from './Styles';
 import { TextField, Button, Typography, Paper } from '@material-ui/core';
 import { useState } from 'react';
 import FileBase from 'react-file-base64';
+import { createPost } from '../../API/CreatePost';
 
 const Form = () => {
   const [postData, setPostdata] = useState({
     creator: '',
     title: '',
     message: '',
-    tags: '',
+    tags: [],
     selectedFile: '',
   });
   const classes = useStyles();
-  const handleSubmit = () => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createPost(postData);
+  };
   const clear = () => {};
   return (
     <Paper className={classes.paper}>
@@ -77,7 +81,7 @@ const Form = () => {
           className={classes.buttonSubmit}
           variant="contained"
           color="primary"
-          size="larg"
+          size="large"
           fullWidth
           type="submit"
         >
