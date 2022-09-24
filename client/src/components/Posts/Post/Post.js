@@ -12,6 +12,7 @@ import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import moment from 'moment';
+import { deletePost } from '../../../API/DeletePost';
 const Post = ({ post, setCurrentID }) => {
   const classes = useStyles();
   return (
@@ -58,7 +59,13 @@ const Post = ({ post, setCurrentID }) => {
             Like
             {post.likeCount}
           </Button>
-          <Button size="small" color="primary" onClick={() => {}}>
+          <Button
+            size="small"
+            color="primary"
+            onClick={() => {
+              deletePost(post._id);
+            }}
+          >
             <DeleteIcon fontSize="small" />
             Delete
           </Button>
