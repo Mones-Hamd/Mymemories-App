@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, AppBar, Typography, Grow, Grid } from '@material-ui/core';
 import memories from './imgs/memories.jpeg';
 import Posts from './components/Posts/Posts';
@@ -6,6 +6,7 @@ import Form from './components/Form/Form';
 import useStyles from './Styles';
 import { PostProvider } from './context/PostsContect';
 const App = () => {
+  const [currentId, setCurrentID] = useState(null);
   const classes = useStyles();
   return (
     <PostProvider>
@@ -29,11 +30,11 @@ const App = () => {
               alignItems="stretch"
               spacing={3}
             >
-              <Grid xs={12} sm={7}>
-                <Posts />
+              <Grid item={true} xs={12} sm={7}>
+                <Posts setCurrentID={setCurrentID} />
               </Grid>
-              <Grid xs={12} sm={4}>
-                <Form />
+              <Grid item={true} xs={12} sm={4}>
+                <Form setCurrentID={setCurrentID} currentId={currentId} />
               </Grid>
             </Grid>
           </Container>
