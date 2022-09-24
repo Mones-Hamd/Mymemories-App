@@ -7,7 +7,7 @@ export const PostProvider = (props) => {
     fetch('http://localhost:5000/api/posts')
       .then((response) => response.json())
       .then((data) => setData(data));
-  }, []);
+  }, [data]);
 
   return (
     <PostsContext.Provider value={data}>{props.children}</PostsContext.Provider>

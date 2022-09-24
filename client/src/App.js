@@ -31,7 +31,7 @@ const App = () => {
               spacing={3}
             >
               <Grid item={true} xs={12} sm={7}>
-                <Posts setCurrentID={setCurrentID} />
+                <Posts setCurrentID={setCurrentID} currentId={currentId} />
               </Grid>
               <Grid item={true} xs={12} sm={4}>
                 <Form setCurrentID={setCurrentID} currentId={currentId} />
