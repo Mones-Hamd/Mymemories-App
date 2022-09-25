@@ -32,13 +32,14 @@ const Post = ({ post, setCurrentID }) => {
       <div className={classes.overlay2}>
         <Button
           style={{ colore: 'white' }}
-          size="small"
-          onClick={(e) => {
-            e.preventDefault();
+          size="large"
+          onClick={() => {
+            console.log(post._id);
             setCurrentID(post._id);
           }}
-        />
-        <MoreHorizIcon fontSize="medium" />
+        >
+          <MoreHorizIcon fontSize="large" />
+        </Button>
       </div>
       <div className={classes.details}>
         <Typography variant="body2" color="textSecondary">
