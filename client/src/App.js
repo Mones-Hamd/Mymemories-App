@@ -1,46 +1,26 @@
-import React, { useState } from 'react';
-import { Container, AppBar, Typography, Grow, Grid } from '@material-ui/core';
-import memories from './imgs/memories.jpeg';
-import Posts from './components/Posts/Posts';
-import Form from './components/Form/Form';
-import useStyles from './Styles';
+import React from 'react';
+import { Container } from '@material-ui/core';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { PostProvider } from './context/PostsContect';
+import NavBar from './components/NavBar/NavBar';
+import Home from './components/Home/Home';
+import Auth from './components/Auth/Auth';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 const App = () => {
-  const [currentId, setCurrentID] = useState(null);
-  const classes = useStyles();
   return (
-    <PostProvider>
-      <Container maxwidth="lg">
-        <AppBar className={classes.appBar} position="static" color="inherit">
-          <Typography className={classes.heading} variant="h2" align="center">
-            MY Memories{' '}
-          </Typography>
-          <img
-            className={classes.image}
-            src={memories}
-            alt="memories"
-            height="60"
-          />
-        </AppBar>
-        <Grow in>
-          <Container>
-            <Grid
-              container
-              justifyContent="space-between"
-              alignItems="stretch"
-              spacing={3}
-            >
-              <Grid item={true} xs={12} sm={7}>
-                <Posts setCurrentID={setCurrentID} currentId={currentId} />
-              </Grid>
-              <Grid item={true} xs={12} sm={4}>
-                <Form setCurrentID={setCurrentID} currentId={currentId} />
-              </Grid>
-            </Grid>
+    <GoogleOAuthProvider clientId="301554052314-0fc4d79gaom2mibrl375jv08qkia3sps.apps.googleusercontent.com">
+      <PostProvider>
+        <BrowserRouter>
+          <Container maxwidth="lg">
+            <NavBar />
+            <Switch>
+              <Route path="/" exact component={Home} />
+              <Route path="/auth" exact component={Auth} />
+            </Switch>
           </Container>
-        </Grow>
-      </Container>
-    </PostProvider>
+        </BrowserRouter>
+      </PostProvider>
+    </GoogleOAuthProvider>
   );
 };
 
