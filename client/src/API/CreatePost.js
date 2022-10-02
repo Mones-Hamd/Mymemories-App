@@ -1,7 +1,13 @@
 export const createPost = async (postData) => {
+  const token = JSON.parse(localStorage.getItem('profile')).token;
+
   const requestOptions = {
     method: 'post',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `bearer ${token}`,
+    },
+
     body: JSON.stringify(postData),
   };
 
