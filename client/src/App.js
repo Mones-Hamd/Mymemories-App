@@ -9,8 +9,8 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 const App = () => {
   return (
     <GoogleOAuthProvider clientId="301554052314-0fc4d79gaom2mibrl375jv08qkia3sps.apps.googleusercontent.com">
-      <PostProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <PostProvider>
           <Container maxwidth="lg">
             <NavBar />
             <Switch>
@@ -18,8 +18,8 @@ const App = () => {
               <Route path="/auth" exact component={Auth} />
             </Switch>
           </Container>
-        </BrowserRouter>
-      </PostProvider>
+        </PostProvider>
+      </BrowserRouter>
     </GoogleOAuthProvider>
   );
 };

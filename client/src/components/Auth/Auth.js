@@ -11,47 +11,60 @@ import { useHistory } from 'react-router-dom';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import useStyles from './Styles';
 import Input from './Input';
-import Icon from './Icon';
-import { useGoogleLogin } from '@react-oauth/google';
 
+import { signIn, signUp } from '../../API/Auth';
+import { GoogleLogin } from '@react-oauth/google';
+import jwtDecode from 'jwt-decode';
+const initialFormData = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+};
 const Auth = () => {
-  const history = useHistory();
-  const login = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        const response = await fetch(
-          'https://www.googleapis.com/oauth2/v3/userinfo',
-          {
-            method: 'get',
-            headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-          },
-        );
-        const result = await response.json();
+  const onSuccess = async (credentialResponse) => {
+    const decodedToken = await jwtDecode(credentialResponse.credential);
 
-        localStorage.setItem(
-          'profile',
-          JSON.stringify({
-            token: tokenResponse.access_token,
-            result,
-          }),
-        );
-        history.push('/');
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  });
+    localStorage.setItem(
+      'profile',
+      JSON.stringify({
+        result: decodedToken,
+        token: credentialResponse.credential,
+      }),
+    );
+    history.push('/');
+  };
+  const onError = () => {
+    console.log('Login Failed');
+  };
+  const [formData, setFormData] = useState(initialFormData);
+  const history = useHistory();
+
   const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const classes = useStyles();
 
-  const handleSubmit = () => {};
-  const handleChange = () => {};
-  const handleShowPasseord = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (isSignUp) {
+      await signUp(formData);
+      history.push('/');
+    } else {
+      await signIn(formData);
+      history.push('/');
+    }
+    console.log(formData);
+  };
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  const handleShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
   const switchMode = () => {
     setIsSignUp((prevIsSignUp) => !prevIsSignUp);
+    setShowPassword(false);
   };
 
   return (
@@ -68,14 +81,14 @@ const Auth = () => {
                 <Input
                   name="firstName"
                   label="First Name"
-                  handleChang={handleChange}
+                  handleChange={handleChange}
                   autoFocus
                   half
                 />
                 <Input
                   name="lastName"
                   label="Last Name"
-                  handleChang={handleChange}
+                  handleChange={handleChange}
                   half
                 />
               </>
@@ -90,7 +103,7 @@ const Auth = () => {
               name="password"
               label="Password"
               handleChange={handleChange}
-              handleShowPasseord={handleShowPasseord}
+              handleShowPassword={handleShowPassword}
               type={showPassword ? 'text' : 'password'}
             />
             {isSignUp && (
@@ -102,7 +115,6 @@ const Auth = () => {
               />
             )}
           </Grid>
-
           <Button
             type="submit"
             fullWidth
@@ -112,16 +124,7 @@ const Auth = () => {
           >
             {isSignUp ? 'Sign Up' : 'Sign In'}
           </Button>
-          <Button
-            className={classes.googleButton}
-            color="primary"
-            fullWidth
-            onClick={login}
-            startIcon={<Icon />}
-            variant="contained"
-          >
-            Google Sign In
-          </Button>
+          <GoogleLogin onSuccess={onSuccess} onError={onError} />
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Button onClick={switchMode}>
@@ -138,3 +141,5 @@ const Auth = () => {
 };
 
 export default Auth;
+
+//"eyJhbGciOiJSUzI1NiIsImtpZCI6ImJhMDc5YjQyMDI2NDFlNTRhYmNlZDhmYjEzNTRjZTAzOTE5ZmIyOTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYmYiOjE2NjQ3MzI5ODgsImF1ZCI6IjMwMTU1NDA1MjMxNC0wZmM0ZDc5Z2FvbTJtaWJybDM3NWp2MDhxa2lhM3Nwcy5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExMTAxNTMyMzk0ODMxNzIwMDIyNiIsImVtYWlsIjoibW9uZXMubS5henphbTkxQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhenAiOiIzMDE1NTQwNTIzMTQtMGZjNGQ3OWdhb20ybWlicmwzNzVqdjA4cWtpYTNzcHMuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJuYW1lIjoiTW9uZXMgQXp6YW0iLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUxtNXd1M2dRalQ2bmhLcjRib2FGQ01SakM4cUlVamlSQkVldjU0bE9FU3I9czk2LWMiLCJnaXZlbl9uYW1lIjoiTW9uZXMiLCJmYW1pbHlfbmFtZSI6IkF6emFtIiwiaWF0IjoxNjY0NzMzMjg4LCJleHAiOjE2NjQ3MzY4ODgsImp0aSI6ImMwNTBlMTZlNjk4YmM4NTFmNGY0MjBhNmFmZWI3NDEzYWE1ZWM1YTYifQ.gU0fH3fGTdad4yjWfp4ZVOV_OwRknh51rsyX5N0A8xLra8rqIbgQFPGz8sI68UlqDrN_3IiJBLeqZj_hSAxNVs7BNH-_akCH1IK-cexwpNEEPp46XAbkw57sS_6K1YIRSw5A0xZ9yTj7d6bj9KaGwrOqGKy2Vh1453bLwoQ3Gd6kjstr1q5yTltOY3fnGyiqjMMJ_iERrQxR-qG92N4SaA6JmudiV2IzqjdtRTRu_c4xN20TagjEfwj7blln6GJpH2_L2p4eiYQ3uB4FiLliZt_8fh1wFyGq165ylkKf2r7hmBICZyso0uQf_sUbAv7NRWpI3t5vT6s9T2Y7YeEvAw"

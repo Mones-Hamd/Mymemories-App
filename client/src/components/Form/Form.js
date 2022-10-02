@@ -9,12 +9,12 @@ import { PostsContext } from '../../context/PostsContect';
 
 const Form = ({ currentId, setCurrentID }) => {
   const [postData, setPostdata] = useState({
-    creator: '',
     title: '',
     message: '',
     tags: [],
     selectedFile: '',
   });
+  const user = JSON.parse(localStorage.getItem('profile'));
   const classes = useStyles();
   const posts = useContext(PostsContext);
   const post = currentId ? posts.find((p) => p._id === currentId) : null;
@@ -23,27 +23,35 @@ const Form = ({ currentId, setCurrentID }) => {
     if (post) {
       setPostdata(post);
     }
-  }, [post]);
+  }, [currentId]);
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (currentId) {
-      updatePost(currentId, postData);
+      updatePost(currentId, { ...postData, name: user?.result?.name });
     } else {
-      createPost(postData);
+      createPost({ ...postData, name: user?.result?.name });
     }
     clear();
   };
   const clear = () => {
     setCurrentID(null);
     setPostdata({
-      creator: '',
       title: '',
       message: '',
       tags: [],
       selectedFile: '',
     });
   };
+  if (!user?.result?.name) {
+    return (
+      <Paper className={classes.paper}>
+        <Typography variant="h6" align="center">
+          Please sign in to create your Own memories
+        </Typography>
+      </Paper>
+    );
+  }
   return (
     <Paper className={classes.paper}>
       <form
@@ -55,16 +63,6 @@ const Form = ({ currentId, setCurrentID }) => {
         <Typography variant="h6">
           {currentId ? 'Editing' : 'Creating'} a Memory{' '}
         </Typography>
-        <TextField
-          name="creator"
-          variant="outlined"
-          label="Creator"
-          fullWidth
-          value={postData.creator}
-          onChange={(e) => {
-            setPostdata({ ...postData, creator: e.target.value });
-          }}
-        />
         <TextField
           name="title"
           variant="outlined"
